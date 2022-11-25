@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: API-GATEWAY
+  config:
+    import: optional:configserver:http://localhost:8888
+  cloud:
+    gateway:
+      routes:
+        - id: STUDENT-SERVICE
+          uri: lb://STUDENT-SERVICE/
+          predicates:
+            - Path=/student/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: STUDENT-SERVICE
+                fallBackUri: forward:/studentServiceFallBack
+
+        - id: DEPARTMENT-SERVICE
+          uri: lb://DEPARTMENT-SERVICE/
+          predicates:
+            - Path=/department/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: DEPARTMENT-SERVICE
+                fallBackUri: forward:/departmentServiceFallBack
+
+
+
+
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
